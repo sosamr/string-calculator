@@ -57,4 +57,13 @@ public class StringCalculatorTest {
         final String numbersString = "1\n2,3,4,5,\n6,7";
         assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(numbersString));
     }
+
+    @Test
+    public void givenStringWithNumbersAndCustomDelimiter_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersWithCustomDelimiter = "//;\n1;2";
+        final long expectedValue = 3;
+        final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
+        assertEquals(expectedValue, actualValue);
+    }
 }
