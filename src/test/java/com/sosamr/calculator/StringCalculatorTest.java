@@ -15,4 +15,13 @@ public class StringCalculatorTest {
         assertEquals(expectedValue, actualValue);
     }
 
+    @Test
+    public void givenStringWithOneNumber_whenAdded_thenReturnValueIsThatNumber() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String oneNumberString = "5";
+        final int expectedValue = 5;
+        final int actualValue = stringCalculator.add(oneNumberString);
+        assertEquals(expectedValue, actualValue);
+    }
+
 }
