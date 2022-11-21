@@ -10,8 +10,8 @@ public class StringCalculatorTest {
     public void givenEmptyString_whenAdded_thenReturnValueIs0() {
         final StringCalculator stringCalculator = new StringCalculator();
         final String emptyString = "";
-        final int expectedValue = 0;
-        final int actualValue = stringCalculator.add(emptyString);
+        final long expectedValue = 0;
+        final long actualValue = stringCalculator.add(emptyString);
         assertEquals(expectedValue, actualValue);
     }
 
@@ -19,8 +19,8 @@ public class StringCalculatorTest {
     public void givenStringWithOneNumber_whenAdded_thenReturnValueIsThatNumber() {
         final StringCalculator stringCalculator = new StringCalculator();
         final String oneNumberString = "5";
-        final int expectedValue = 5;
-        final int actualValue = stringCalculator.add(oneNumberString);
+        final long expectedValue = 5;
+        final long actualValue = stringCalculator.add(oneNumberString);
         assertEquals(expectedValue, actualValue);
     }
 
@@ -28,15 +28,17 @@ public class StringCalculatorTest {
     public void givenStringWithTwoNumbers_whenAdded_thenReturnValueIsOK() {
         final StringCalculator stringCalculator = new StringCalculator();
         final String twoNumbersString = "1,2";
-        final int expectedValue = 3;
-        final int actualValue = stringCalculator.add(twoNumbersString);
+        final long expectedValue = 3;
+        final long actualValue = stringCalculator.add(twoNumbersString);
         assertEquals(expectedValue, actualValue);
     }
 
     @Test
-    public void givenStringWith3Numbers_whenAdded_thenExceptionIsThrown() {
+    public void givenStringWithManyNumbers_whenAdded_thenReturnValueIsOK() {
         final StringCalculator stringCalculator = new StringCalculator();
-        final String tooManyNumbersString = "1,2,3";
-        assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(tooManyNumbersString));
+        final String manyNumbersString = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,100000,2000000,30000000,400000000";
+        final long expectedValue = 432100120;
+        final long actualValue = stringCalculator.add(manyNumbersString);
+        assertEquals(expectedValue, actualValue);
     }
 }
