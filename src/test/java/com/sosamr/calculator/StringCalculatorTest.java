@@ -2,7 +2,7 @@ package com.sosamr.calculator;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StringCalculatorTest {
 
@@ -31,5 +31,12 @@ public class StringCalculatorTest {
         final int expectedValue = 3;
         final int actualValue = stringCalculator.add(twoNumbersString);
         assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    public void givenStringWith3Numbers_whenAdded_thenExceptionIsThrown() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String tooManyNumbersString = "1,2,3";
+        assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(tooManyNumbersString));
     }
 }
