@@ -24,4 +24,12 @@ public class StringCalculatorTest {
         assertEquals(expectedValue, actualValue);
     }
 
+    @Test
+    public void givenStringWithTwoNumbers_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String twoNumbersString = "1,2";
+        final int expectedValue = 3;
+        final int actualValue = stringCalculator.add(twoNumbersString);
+        assertEquals(expectedValue, actualValue);
+    }
 }
