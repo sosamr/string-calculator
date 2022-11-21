@@ -41,4 +41,20 @@ public class StringCalculatorTest {
         final long actualValue = stringCalculator.add(manyNumbersString);
         assertEquals(expectedValue, actualValue);
     }
+
+    @Test
+    public void givenStringWithNumbersIncludingNewLines_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersString = "1\n2,3,4,5\n6,7,8,9\n10";
+        final long expectedValue = 55;
+        final long actualValue = stringCalculator.add(numbersString);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    public void givenStringWithNewLineAndCommaSeparatorTogether_whenAdded_thenExceptionIsThrown() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersString = "1\n2,3,4,5,\n6,7";
+        assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(numbersString));
+    }
 }
