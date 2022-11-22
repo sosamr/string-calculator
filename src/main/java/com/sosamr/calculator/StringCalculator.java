@@ -11,11 +11,13 @@ public class StringCalculator {
     private final static String DEFAULT_DELIMITER = ",";
     private final static String NEW_LINE = "\n";
     private final static String DELIMITER_INDICATOR = "//";
+    private final static int EXCLUDE_VALUES_GREATER_THAN = 1000;
 
     /**
      * @param input - comma (default) or custom or new line separated list of valid integer numbers.
      *              It can contain a custom delimiter:
      *              "//[delimiter]\n[numbers...]” for example “//;\n1;2” should return 3 where the default delimiter is ‘;’
+     *              Numbers greater than 1000 excluded from calculation.
      *              Assumptions: Must be not null, all the values are valid integer numbers.
      * @return the sum of the numbers or 0 for an empty string
      */
@@ -26,13 +28,14 @@ public class StringCalculator {
 
         List<String> allStringNumbers = getParsedNumbers(input);
 
-        List<Integer> allNumbers = allStringNumbers.stream()
+        List<Integer> allValidNumbers = allStringNumbers.stream()
                 .map(Integer::parseInt)
+                .filter(value -> value <= EXCLUDE_VALUES_GREATER_THAN)
                 .collect(Collectors.toList());
 
-        validateNoNegatives(allNumbers);
+        validateNoNegatives(allValidNumbers);
 
-        return allNumbers.stream().reduce(0, Integer::sum);
+        return allValidNumbers.stream().reduce(0, Integer::sum);
     }
 
     public List<String> getParsedNumbers(final String input) {
