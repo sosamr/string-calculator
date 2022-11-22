@@ -1,32 +1,36 @@
 package com.sosamr.calculator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class StringCalculator {
 
-    private final static String DEFAULT_DELIMITER = ",";
     private final static String NEW_LINE = "\n";
-    private final static String DELIMITER_INDICATOR = "//";
     private final static int EXCLUDE_VALUES_GREATER_THAN = 1000;
 
     /**
-     * @param input - comma (default) or custom or new line separated list of valid integer numbers.
+     * @param fullInput - comma (default) or custom or new line separated list of valid integer numbers.
      *              It can contain a custom delimiter:
      *              "//[delimiter]\n[numbers...]” for example “//;\n1;2” should return 3 where the default delimiter is ‘;’
      *              Numbers greater than 1000 excluded from calculation.
      *              Assumptions: Must be not null, all the values are valid integer numbers.
      * @return the sum of the numbers or 0 for an empty string
      */
-    public long add(final String input) {
-        if (input.isEmpty()) {
+    public long add(final String fullInput) {
+        if (fullInput.isEmpty()) {
             return 0;
         }
 
-        List<String> allStringNumbers = getParsedNumbers(input);
+        final InputStringDelimiters delimiters = new InputStringDelimiters(fullInput);
+        final String inputNumbers = getInputNumbers(fullInput, delimiters);
+
+        checkForNewLineNextToDelimiter(inputNumbers, delimiters);
+
+        List<String> allStringNumbers = getParsedNumbers(inputNumbers, delimiters);
 
         List<Integer> allValidNumbers = allStringNumbers.stream()
                 .map(Integer::parseInt)
@@ -38,39 +42,36 @@ public class StringCalculator {
         return allValidNumbers.stream().reduce(0, Integer::sum);
     }
 
-    public List<String> getParsedNumbers(final String input) {
-        final Optional<String> customDelimiter = Optional.ofNullable(determineCustomDelimiter(input));
-        final String inputNumbers;
-        if (customDelimiter.isPresent()) {
-            inputNumbers = input.substring(input.indexOf("\n") + 1);
-        } else {
-            inputNumbers = input;
-        }
-        checkForConsecutiveDelimiters(inputNumbers, customDelimiter.orElse(DEFAULT_DELIMITER));
+    private List<String> getParsedNumbers(final String inputNumbers, final InputStringDelimiters delimiters) {
 
         final String[] lines = inputNumbers.isEmpty() ? new String[0]: inputNumbers.split(NEW_LINE);
+        List<String> baseList = new ArrayList<>(Arrays.asList(lines));
 
-        return Stream.of(lines)
-                .map(line -> line.split(customDelimiter.orElse(DEFAULT_DELIMITER)))
-                .flatMap(Arrays::stream)
-                .collect(Collectors.toList());
+        for (String delimiter : delimiters.getDelimiters()) {
+            List<String> processedForCurrentDelimiterList = baseList.stream()
+                    .map(text -> text.split(Pattern.quote(delimiter)))
+                    .flatMap(Arrays::stream)
+                    .collect(Collectors.toList());
+            baseList.clear();
+            baseList.addAll(processedForCurrentDelimiterList);
+        }
+        return baseList;
     }
 
-    private String determineCustomDelimiter(final String input) {
-        if (input.startsWith(DELIMITER_INDICATOR)) {
-            int delimiterEndPos = input.indexOf(NEW_LINE);
-            if (delimiterEndPos < 0) {
-                throw new IllegalArgumentException("Customer delimiter must end with end of line char.");
-            }
-            return input.substring(2, delimiterEndPos);
+    private String getInputNumbers(final String fullInput, final InputStringDelimiters delimiters) {
+        if (delimiters.isCustomDelimiter()) {
+            return fullInput.substring(fullInput.indexOf(NEW_LINE) + 1);
         }
-        return null;
+            return fullInput;
     }
 
-    private void checkForConsecutiveDelimiters(final String input, final String delimiter) throws IllegalArgumentException {
-        if (input.contains(delimiter + NEW_LINE) || input.contains(NEW_LINE + delimiter)) {
-            throw new IllegalArgumentException("Two consecutive delimiters is not allowed");
-        }
+    private void checkForNewLineNextToDelimiter(final String inputNumbers, final InputStringDelimiters inputDelimiters) throws IllegalArgumentException {
+        inputDelimiters.getDelimiters().stream()
+            .filter(delimiter -> inputNumbers.contains(delimiter + NEW_LINE) || inputNumbers.contains(NEW_LINE + delimiter))
+            .findAny()
+            .ifPresent((delimiter) -> {
+                throw new IllegalArgumentException(String.format("Delimiter %s is next to new line char which is not allowed.", delimiter));
+            });
     }
 
     private void validateNoNegatives(final List<Integer> numbers) throws IllegalArgumentException {
@@ -83,4 +84,48 @@ public class StringCalculator {
         }
     }
 
+    static class InputStringDelimiters {
+        private final static String DEFAULT_DELIMITER = ",";
+
+        private final static Pattern delimiterLinePattern = Pattern.compile("^//(.*?)\n");
+        private final static Pattern delimiterPattern = Pattern.compile("\\[(.*?)\\]");
+
+        private final List<String> delimiters = new ArrayList<>();
+
+        private boolean customDelimiter = false;
+
+        InputStringDelimiters(final String fullInput) {
+            buildDelimiters(fullInput);
+        }
+
+        public List<String> getDelimiters() {
+            return this.delimiters;
+        }
+
+        public boolean isCustomDelimiter() {
+            return customDelimiter;
+        }
+        private void buildDelimiters(final String input) {
+            delimiters.clear();
+            Matcher matcherLine = delimiterLinePattern.matcher(input);
+            if (matcherLine.find()) {
+                customDelimiter = true;
+                String delimiterLine = matcherLine.group(1);
+                Matcher delimiterMatcher = delimiterPattern.matcher(delimiterLine);
+                boolean found = false;
+                while (delimiterMatcher.find()) {
+                    found = true;
+                    delimiters.add(delimiterMatcher.group(1));
+                }
+                //when ! found the delimiter is just a character not inside the []
+                if (!found) {
+                    delimiters.add(delimiterLine);
+                }
+            } else {
+                //when the optional delimiters line is not present then default is used
+                delimiters.add(DEFAULT_DELIMITER);
+                customDelimiter = false;
+            }
+        }
+    }
 }
