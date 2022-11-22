@@ -101,4 +101,22 @@ public class StringCalculatorTest {
         final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
         assertEquals(expectedValue, actualValue);
     }
+
+    @Test
+    public void givenStringWithNumbersAndDifferentCustomDelimitersWithOneChar_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersWithCustomDelimiter = "//[-][!][*]\n1!2!3-4*5";
+        final long expectedValue = 15;
+        final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    public void givenStringWithNumbersAndDifferentCustomDelimitersWithMoreThanOneChar_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersWithCustomDelimiter = "//[---][!!][****]\n1!!2!!3---4****5";
+        final long expectedValue = 15;
+        final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
+        assertEquals(expectedValue, actualValue);
+    }
 }
