@@ -75,4 +75,12 @@ public class StringCalculatorTest {
         final long actualValue = stringCalculator.add(noNumbersWithCustomDelimiter);
         assertEquals(expectedValue, actualValue);
     }
+
+    @Test
+    public void givenStringWithNegativeNumbers_whenAdded_thenExceptionIsThrown() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersString = "1\n-2,3,4,-5,\n6,7";
+        final String expectedMessage = "Negative numbers not allowed: -2,-5";
+        assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(numbersString), expectedMessage);
+    }
 }
