@@ -24,11 +24,15 @@ public class StringCalculator {
             return 0;
         }
 
-        List<String> allNumbers = getParsedNumbers(input);
+        List<String> allStringNumbers = getParsedNumbers(input);
 
-        return allNumbers.stream()
+        List<Integer> allNumbers = allStringNumbers.stream()
                 .map(Integer::parseInt)
-                .reduce(0, Integer::sum);
+                .collect(Collectors.toList());
+
+        validateNoNegatives(allNumbers);
+
+        return allNumbers.stream().reduce(0, Integer::sum);
     }
 
     public List<String> getParsedNumbers(final String input) {
@@ -63,6 +67,16 @@ public class StringCalculator {
     private void checkForConsecutiveDelimiters(final String input, final String delimiter) throws IllegalArgumentException {
         if (input.contains(delimiter + NEW_LINE) || input.contains(NEW_LINE + delimiter)) {
             throw new IllegalArgumentException("Two consecutive delimiters is not allowed");
+        }
+    }
+
+    private void validateNoNegatives(final List<Integer> numbers) throws IllegalArgumentException {
+        String negatives = numbers.stream()
+                .filter(number -> number < 0)
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        if (!negatives.isEmpty()) {
+            throw new IllegalArgumentException("Negative numbers not allowed: " + negatives);
         }
     }
 
