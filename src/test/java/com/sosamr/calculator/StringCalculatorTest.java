@@ -66,4 +66,13 @@ public class StringCalculatorTest {
         final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
         assertEquals(expectedValue, actualValue);
     }
+
+    @Test
+    public void givenStringWithCustomDelimiterButNoNumbers_whenAdded_thenReturnValueIs0() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String noNumbersWithCustomDelimiter = "//;\n";
+        final long expectedValue = 0;
+        final long actualValue = stringCalculator.add(noNumbersWithCustomDelimiter);
+        assertEquals(expectedValue, actualValue);
+    }
 }
