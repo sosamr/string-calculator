@@ -36,8 +36,8 @@ public class StringCalculatorTest {
     @Test
     public void givenStringWithManyNumbers_whenAdded_thenReturnValueIsOK() {
         final StringCalculator stringCalculator = new StringCalculator();
-        final String manyNumbersString = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,100000,2000000,30000000,400000000";
-        final long expectedValue = 432100120;
+        final String manyNumbersString = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15";
+        final long expectedValue = 120;
         final long actualValue = stringCalculator.add(manyNumbersString);
         assertEquals(expectedValue, actualValue);
     }
@@ -82,5 +82,14 @@ public class StringCalculatorTest {
         final String numbersString = "1\n-2,3,4,-5,\n6,7";
         final String expectedMessage = "Negative numbers not allowed: -2,-5";
         assertThrows(IllegalArgumentException.class, () -> stringCalculator.add(numbersString), expectedMessage);
+    }
+
+    @Test
+    public void givenStringWithValuesGreaterThan1000_whenAdded_thenReturnValueExcludedThem() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String manyNumbersString = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1000,5000,999999999";
+        final long expectedValue = 1120;
+        final long actualValue = stringCalculator.add(manyNumbersString);
+        assertEquals(expectedValue, actualValue);
     }
 }
