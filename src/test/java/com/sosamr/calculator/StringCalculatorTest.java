@@ -92,4 +92,13 @@ public class StringCalculatorTest {
         final long actualValue = stringCalculator.add(manyNumbersString);
         assertEquals(expectedValue, actualValue);
     }
+
+    @Test
+    public void givenStringWithNumbersAndCustomDelimiterWithMoreThanOneChar_whenAdded_thenReturnValueIsOK() {
+        final StringCalculator stringCalculator = new StringCalculator();
+        final String numbersWithCustomDelimiter = "//[***]\n1***2***3";
+        final long expectedValue = 6;
+        final long actualValue = stringCalculator.add(numbersWithCustomDelimiter);
+        assertEquals(expectedValue, actualValue);
+    }
 }
